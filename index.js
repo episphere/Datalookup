@@ -1,11 +1,104 @@
 import * as xlsx from "https://cdn.sheetjs.com/xlsx-0.19.2/package/xlsx.mjs";
-import { epibox } from 'https://danielruss.github.io/epibox/export.js'
-//import { epibox } from 'http://localhost:5500/export.js'
 import localforage from 'https://cdn.skypack.dev/localforage';
 
 
-window.epibox = epibox
-window.xlsx = xlsx
+// Setup LF and Load the data...
+let dataDB = localforage.createInstance({
+    name        : 'riskviz',
+    storeName   : 'data'
+})
+let files=['General Table for Screening v5.xlsx','General Table for Post-Colpo_v5.xlsx']
+let baseURL='https://episphere.github.io/riskviz/data/'
+
+async function loadFiles(){
+    let dbKeys = await dataDB.keys()
+
+    await Promise.all ( 
+        files.map( async (file) => {
+            if (!dbKeys.includes(file)){
+                let dta=await url_read_excel(`${baseURL+encodeURIComponent(file)}`)
+                console.log(dta)
+                cache_data(file,dta)
+            }else{
+                console.log(`file ${file} already cached..`)
+            }
+        })
+    )
+}
+
+async function cache_data(file,dta){    
+    // get first sheet...
+    console.log(dta)
+    let sheet = dta.Sheets[ dta.SheetNames[0] ]
+    let array = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" })
+    let headers = array.shift()
+
+    let data={
+        'headers':headers,
+        'rows':array.map( (row)=> row.reduce( 
+            (pv,cv,indx)=>{
+                pv[headers[indx]]=cv;
+                return pv
+            },{} )),
+        'unique_values':{}
+        }
+    
+    // add unique values of all columns up-to column "N"
+    for ( let [indx,colname] of headers.entries()){
+        if (colname == "N") break;
+        let s = new Set(array.map((row)=>row[indx]))
+        data.unique_values[colname] = Array.from(s.values())
+    }
+    console.log(data)
+
+    dataDB.setItem(file, data)
+}
+
+loadFiles()
+
+
+function build_select_element(unique_values,value){
+    let labelElement = document.createElement("label")
+    labelElement.innerText=`${value} `
+    let selectElement = document.createElement("select")
+    labelElement.appendChild(selectElement)
+
+    unique_values[value].forEach( (v,indx) => {
+        let opt=document.createElement("option")
+        opt.innerText=v
+        opt.value=indx
+        selectElement.insertAdjacentElement("beforeend",opt)
+    })
+    return labelElement
+}
+function build_select_inputs(unique_values){
+    let div=document.getElementById("fileSpecificSelect")
+    div.innerText=""
+    for (let value in unique_values){
+        console.log(`building ${value}`)
+        div.insertAdjacentElement('beforeend',build_select_element(unique_values,value)) 
+        div.insertAdjacentHTML('beforeend',"<br>")
+    }
+}
+
+async function fillFileElement(){
+    // fill the input with the filename...
+    let selected = document.getElementById("colpoEl").value
+    document.getElementById("fileReadEl").value=`data: ${files[selected]}`
+
+    // get the column names...
+    let fileData = await dataDB.getItem(files[selected])
+    build_select_inputs(fileData.unique_values)
+}
+document.getElementById("colpoEl").addEventListener("change", fillFileElement)
+fillFileElement()
+
+
+
+//import { epibox } from 'https://danielruss.github.io/epibox/export.js'
+//import { epibox } from 'http://localhost:5500/export.js'
+//window.epibox = epibox
+//window.xlsx = xlsx
 let lfcache = "";
 
 document.querySelectorAll("#epibox input[type=button]").forEach(btn => {
@@ -28,6 +121,12 @@ document.querySelectorAll("#epibox input[type=button]").forEach(btn => {
             break;
     }
 })
+
+
+async function url_read_excel(url){
+    const data = await (await fetch(url)).arrayBuffer()
+    return xlsx.read(data)
+}
 
 async function box_read_excel(file_id) {
     let token = (await epibox.checkToken()).access_token;
@@ -116,6 +215,12 @@ function build_table(tableElement, data, sheet="") {
 }
 
 
+
+
+
+
+
+
 async function box_load(bid) {
     if (! await lfcache.getItem(bid)) {
         console.log(`loading ${bid}`)
@@ -138,6 +243,7 @@ async function box_load(bid) {
     }
 }
 
+/*    
 epibox.ini()
     .then(() =>
         localforage.createInstance({
@@ -151,6 +257,7 @@ epibox.ini()
         let boxids = ['1129786990737', '1129793580583', '1129790568327', '1129790088254', '1129788291181']
         boxids.forEach(id => box_load(id))
     }).catch(error => console.error("Trouble caching the box files!!!"))
+
 
 
 document.getElementById("boxfiles").addEventListener("change", async (event) => {
@@ -170,3 +277,4 @@ document.getElementById("boxfiles").addEventListener("change", async (event) => 
 })
 
 window.box_read_excel = box_read_excel;
+*/

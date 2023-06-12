@@ -11,7 +11,7 @@ let dataDB = localforage.createInstance({
 // so we can let the user set it...  if so, you but url encode the 
 let files=['General Table for Screening v5.xlsx','General Table for Post-Colpo_v5.xlsx']
 //let baseURL='https://episphere.github.io/riskviz/data/'
-let baseURL='./data/'
+let baseURL='/data/'
 
 async function cache_data(file,dta){    
     // get first sheet...
@@ -56,52 +56,74 @@ async function loadFiles(){
         })
     )
 }
-loadFiles()
+
 
 function displayResults(){
     build_filtered_table()
 }
 
-function build_select_element(unique_values,value){
-    let labelElement = document.createElement("label")
-    labelElement.innerText=`${value} `
+function build_select_element(title,options){
     let selectElement = document.createElement("select")
-    selectElement.dataset.colname=value
-    labelElement.appendChild(selectElement)
+    selectElement.classList.add("form-select","form-select-sm","mb-2")
+    selectElement.dataset.colname=title
     selectElement.addEventListener("change",displayResults)
 
-    unique_values[value].forEach( (v,indx) => {
-        let opt=document.createElement("option")
-        opt.innerText=v
+    // give a "no-selected value"
+    let opt=document.createElement("option")
+    opt.innerText = "<ANY>"
+    opt.value = -1
+    selectElement.insertAdjacentElement("beforeend",opt)
+    options.forEach( (option,indx) => {
+        opt=document.createElement("option")
+        opt.innerText=option
         opt.value=indx
         selectElement.insertAdjacentElement("beforeend",opt)
     })
-    return labelElement
+
+    console.log(selectElement)
+    return selectElement
 }
-function build_select_inputs(unique_values){
-    let div=document.getElementById("fileSpecificSelect")
-    div.innerText=""
+function build_card(title,options){
+    // build the card and the card body...
+    let card = document.createElement('div')
+    card.classList.add("card")
+
+    let cardBody = document.createElement('div')
+    cardBody.classList.add("card-body")
+    card.insertAdjacentElement("beforeend",cardBody)
+
+    let cardTitle = document.createElement('div')
+    cardTitle.classList.add("card-title","h6")
+    cardTitle.insertAdjacentText("afterbegin",title)
+    cardBody.insertAdjacentElement("beforeend",cardTitle)
+
+    let cardText = document.createElement('div')
+    cardText.classList.add("card-text")
+    cardText.insertAdjacentElement("beforeend", build_select_element(title,options))
+    cardBody.insertAdjacentElement("beforeend",cardText)
+    
+    return card
+}
+function build_input_cards(unique_values){
+    let cards=document.getElementById("cardGroup")
+    Array.from(cards.children).forEach( (card,indx) => {
+        if (indx > 0) cards.removeChild(card)
+    } )
+
     for (let value in unique_values){
-        console.log(`building ${value}`)
-        div.insertAdjacentElement('beforeend',build_select_element(unique_values,value)) 
-        div.insertAdjacentHTML('beforeend',"<br>")
+        cards.insertAdjacentElement('beforeend',build_card(value,unique_values[value])) 
     }
 }
 
 async function fillFileElement(){
     // fill the input with the filename...
     let selected = document.getElementById("colpoEl").value
-    document.getElementById("fileReadEl").value=`data: ${files[selected]}`
+    document.getElementById("fileReadEl").innerText=`data: ${files[selected]}`
 
     // get the column names...
     let fileData = await dataDB.getItem(files[selected])
-    build_select_inputs(fileData.unique_values)
+    build_input_cards(fileData.unique_values)
 }
-document.getElementById("colpoEl").addEventListener("change", fillFileElement)
-fillFileElement()
-
-
-
 
 let lfcache = "";
 
@@ -120,44 +142,59 @@ function getHeader(sheet) {
     return header
 }
 
-async function build_filtered_table(tableElement){
-    let div = document.getElementById("fileSpecificSelect")
-    div.querySelectorAll("select").map( s => ({s[dataset][colname]: "hi"}) )
+async function build_filtered_table(){    
 
-
+    /// Filter the Data...
     let selected = document.getElementById("colpoEl").value
     let all_data = await dataDB.getItem(files[selected])
-
     
-//    let filtered_rows = all_data.filter()
+    let cardGroup = document.getElementById("cardGroup")
+    console.log( cardGroup.querySelectorAll("select[data-colname]")) 
+    //build complex filter...
+    let filter_object = Array.from(cardGroup.querySelectorAll("select[data-colname]")).reduce( (prev,curr)=>{
+        console.log(curr.dataset)
+        prev[curr.dataset.colname] = all_data.unique_values[curr.dataset.colname][curr.value] ?? "*"
+        return prev
+    }, {});
+    console.log(filter_object)
 
-    console.log(files[selected])
-    console.log(all_data)
-}
+    let filtered_data = all_data.rows.filter( (row) => {
+        for (const [key,value] of Object.entries(filter_object) ){
+            try {
+                if (filter_object[key] != '*' && row[key] != filter_object[key]) {
+                    return false
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        return true
+    } );
+    console.log("fd:",filtered_data)
 
-const sheetDiv = document.getElementById("sheetDiv");
-function fillSheetDiv(tableElement,data,active_sheet){
-    sheetDiv.innerText=""
-    if (data.sheets.length<2) return
-    console.log(active_sheet)
-    data.sheets.forEach( (sheet,index) => {
-        let aElement = document.createElement("input")
-        console.log(sheet,active_sheet,sheet==active_sheet)
-        if (sheet==active_sheet) aElement.checked=true
-        aElement.id=`Sheet_${index}`
-        aElement.classList.add("btn-check")
-        aElement.type="radio"
-        aElement.value=sheet
-        aElement.innerText=sheet
-        aElement.name="sheet"
-        aElement.setAttribute("autocomplete","off")
-        aElement.addEventListener("change",()=>{
-            build_table(tableElement,data,sheet)
+    // build the table...
+    let resTable = document.getElementById("resTable")
+    resTable.innerText=""
+    let thead = resTable.createTHead()
+    let th_row = thead.insertRow()
+    let tbody = resTable.createTBody()
+
+    // build the header row...
+    all_data.headers.forEach(header => {
+        let th_cell = th_row.insertCell()
+        th_cell.outerHTML=`<th>${header}</th>`
+    })
+
+    // for each filtered data row build a table row.
+    filtered_data.forEach( (row) => {
+        let tb_row = tbody.insertRow()
+        all_data.headers.forEach(header => {
+            let tb_cell = tb_row.insertCell()
+            tb_cell.innerText = row[header]
         })
-        sheetDiv.insertAdjacentElement("beforeend",aElement)
-        sheetDiv.insertAdjacentHTML("beforeend",`<label for=${aElement.id} class="mx-2 mb-2 btn btn-outline-dark">${aElement.value}`)
     })
 }
+
 function build_table(tableElement, data, sheet="") {
 
     console.log(`calling build_table ${sheet}`)
@@ -202,7 +239,9 @@ function build_table(tableElement, data, sheet="") {
 
 
 
-
-
+loadFiles()
+document.getElementById("colpoEl").addEventListener("change", fillFileElement)
+await fillFileElement()
+build_filtered_table() 
 
 

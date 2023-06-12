@@ -1,0 +1,24 @@
+.flex-basis-30 {
+    flex-basis: 30%;
+}
+.flex-basis-40 {
+    flex-basis: 40%;
+}
+.flex-basis-70 {
+    flex-basis: 70%;
+}
+.right-col{
+    flex-basis: 30%;
+    max-width: min(max-width,3000vw);
+}
+
+.overflow-x-scroll {
+    overflow-x: scroll;
+}
+.fs-xs {
+    font-size: x-small;
+}
+#cardGroup {
+    row-gap:3px
+}
+

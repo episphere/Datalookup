@@ -240,8 +240,12 @@ function build_table(tableElement, data, sheet="") {
 
 
 loadFiles()
-document.getElementById("colpoEl").addEventListener("change", fillFileElement)
+document.getElementById("colpoEl").addEventListener("change", async () => {
+    await fillFileElement()
+    build_filtered_table()
+})
 await fillFileElement()
 build_filtered_table() 
+
 
 

@@ -78,11 +78,11 @@ async function tabulate(tabDiv,tb){
     })
     let h = '<h2> User attributes</h2>'
     df.conds.forEach(k=>{
-        h += `<p>${k}:<select>; `
+        h += `<p>${k}:<select id="${k}">; `
         df.vals[k].forEach(v=>{
             h += `<option>${v}</option>`
         })
-        h += `</select></p> `
+        h += `</select> <input type="checkbox" checked="true"></p>`
         // h += `<div id="${k}"><h3>${k}:<h3></div>`
     })
     h += `<h2>Population values</h2>`

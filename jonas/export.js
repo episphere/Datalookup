@@ -73,9 +73,26 @@ async function tabulate(tabDiv,tb){
     df.conds=df.cols.slice(0,df.cols.indexOf('N')) // condition variables
     df.vals=[]
     df.conds.forEach(k=>{
+        df.vals[k]=[]
         df.vals[k]=[...new Set(df.rows[k])]
     })
-    debugger
+    let h = '<h2> User attributes</h2>'
+    df.conds.forEach(k=>{
+        h += `<p>${k}:<select>; `
+        df.vals[k].forEach(v=>{
+            h += `<option>${v}</option>`
+        })
+        h += `</select></p> `
+        // h += `<div id="${k}"><h3>${k}:<h3></div>`
+    })
+    h += `<h2>Population values</h2>`
+    df.cols.slice(df.conds.length,10).forEach(k=>{
+        h+=`<p>`
+        h+=`${k} <input type="checkbox">`
+        h+=`</p>`
+    })
+    tabDiv.innerHTML=h
+    //debugger
 }
 
 async function readURL(url){

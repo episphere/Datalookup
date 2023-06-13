@@ -10,8 +10,9 @@ let dataDB = localforage.createInstance({
 // data is stored in these two files...  maybe make this a function
 // so we can let the user set it...  if so, you but url encode the 
 let files=['General Table for Screening v5.xlsx','General Table for Post-Colpo_v5.xlsx']
+let baseURL = `${location.href.substring(0,location.href.indexOf("/daniel"))}/data`
 //let baseURL='https://episphere.github.io/riskviz/data/'
-let baseURL='/data/'
+//let baseURL='/data/'
 
 async function cache_data(file,dta){    
     // get first sheet...

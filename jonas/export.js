@@ -1,6 +1,12 @@
 // experimenting with communicating risk visually
 
-import * as xlsx from "https://cdn.sheetjs.com/xlsx-0.19.2/package/xlsx.mjs"
+//import * as xlsx from "https://cdn.sheetjs.com/xlsx-0.19.2/package/xlsx.mjs"
+//import { read, writeFileXLSX } from "https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs"
+//import { read, writeFileXLSX } from "https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs"
+
+let read = (await import('https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs')).read
+
+let dataObj={} // read and cache here
 
 // default tables
 const tbls = [
@@ -22,7 +28,7 @@ function UI(div=document.getElementById('vizDiv')){
     div.innerHTML='select data table <select id="selTable"></select> <span id="source">...</span>'
     let selTable = div.querySelector('#selTable')
     tbls.forEach(x=>{
-        console.log(x)
+        //console.log(x)
         let opt = document.createElement('option')
         opt.textContent=opt.value=x
         selTable.appendChild(opt)
@@ -40,13 +46,34 @@ function UI(div=document.getElementById('vizDiv')){
 
 async function tabulate(tabDiv,tb){
     let url=`${location.origin+location.pathname.replace(/[^\/]+\/$/,'')}data/${encodeURIComponent(tb)}`
-    let dt = await fetch(`../data/${encodeURIComponent(tb)}`)
+    //let dt = await fetch(`../data/${encodeURIComponent(tb)}`)
+    let dt = await readURL(url)
+    console.log('--------------')
+    console.log(tb)
     console.log(dt)
     let srcSpan = tabDiv.parentElement.querySelector('#source')
-    srcSpan.innerHTML=`<a href="${url}" target="_blank">source</a>`
+    setTimeout(function(){
+        srcSpan.innerHTML=`<a href="${url}" target="_blank">source</a>`
+    },500)
+    // read data
+    
+}
+
+async function readURL(url){
+    if(dataObj[url]){
+        return dataObj[url]
+    }else{
+        let dt=read(await (await fetch(url)).arrayBuffer())
+        dataObj[url]=dt
+        return dt
+    }
 }
 
 export {
     tbls,
-    UI
+    UI,
+    read,
+    dataObj
 }
+
+// XLSX.read(await (await fetch('http://localhost:8000/riskviz/data/General%20Table%20for%20Post-Colpo_v5.xlsx')).arrayBuffer())

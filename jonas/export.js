@@ -5,14 +5,15 @@
 //import { read, writeFileXLSX } from "https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs"
 
 let read = (await import('https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs')).read
-
+let sheet_to_json = (await import('https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs')).utils.sheet_to_json
+let df = [] // the current sheet dataframe (for debugging)
 let dataObj={} // read and cache here
 
 // default tables
 const tbls = [
-    "General Table for Post-Colpo_v5.xlsx",
-    "General Table for Post-Treatment_v2.xlsx",
-    "General Table for Risk Following Colposcpy.xlsx",
+    //"General Table for Post-Colpo_v5.xlsx",
+    //"General Table for Post-Treatment_v2.xlsx",
+    //"General Table for Risk Following Colposcpy.xlsx",
     "General Table for Screening v5.xlsx",
     "General Table for Surveillance_v6.xlsx"
 ]
@@ -55,24 +56,44 @@ async function tabulate(tabDiv,tb){
     setTimeout(function(){
         srcSpan.innerHTML=`<a href="${url}" target="_blank">source</a>`
     },500)
-    // read data
+    // organize a data frame
+    //let df={  // exported
+    df={
+        cols:Object.keys(dt.sheet[0]), // column name in order, left to right
+        rows:{} // rows in order, top to bottom
+    }
     
+    df.cols.forEach(k=>{
+        df.rows[k]=[]
+        dt.sheet.forEach(r=>{
+            df.rows[k].push(r[k]) // push value picked from one row at a time
+        })
+    })
+    // separating conditions from values
+    df.conds=df.cols.slice(0,df.cols.indexOf('N')) // condition variables
+    df.vals=[]
+    df.conds.forEach(k=>{
+        df.vals[k]=[...new Set(df.rows[k])]
+    })
+    debugger
 }
 
 async function readURL(url){
-    if(dataObj[url]){
-        return dataObj[url]
-    }else{
-        let dt=read(await (await fetch(url)).arrayBuffer())
+    let dt
+    if(!dataObj[url]){
+        dt=read(await (await fetch(url)).arrayBuffer())
+        dt.sheet=sheet_to_json(dt.Sheets[dt.SheetNames[0]])
         dataObj[url]=dt
-        return dt
-    }
+    };
+    //sheet=dt.sheet
+    return dataObj[url]
 }
 
 export {
     tbls,
     UI,
     read,
+    df, // for debugging
     dataObj
 }
 

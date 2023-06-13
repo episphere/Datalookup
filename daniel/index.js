@@ -239,7 +239,7 @@ function build_table(tableElement, data, sheet="") {
 
 
 
-loadFiles()
+await loadFiles()
 document.getElementById("colpoEl").addEventListener("change", async () => {
     await fillFileElement()
     build_filtered_table()

@@ -86,7 +86,7 @@ async function tabulate(tabDiv,tb){
         // h += `<div id="${k}"><h3>${k}:<h3></div>`
     })
     h += `<h2>Population values</h2>`
-    df.cols.slice(df.conds.length,10).forEach(k=>{
+    df.cols.slice(df.conds.length).forEach(k=>{
         h+=`<p>`
         h+=`${k} <input type="checkbox">`
         h+=`</p>`

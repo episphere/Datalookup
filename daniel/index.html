@@ -33,7 +33,25 @@
                     <table class="table table-striped table-dark" id="resTable"></table>
                 </div>
                 <div class="flex-basis-60 flex-shrink-0 bg-light border border-solid">
-                    <div style="height: 60vh;"> &lt; figure goes here &gt;</div>
+                    <div style="height: 60vh;"> 
+<!--
+                        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#ccgCollapse">&#9776;</button>
+                        <div class="collapse" id="ccgCollapse" >
+                            <div class="d-flex flex-wrap" id="columnCardGroup"></div>
+                        </div>-->
+                        <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#ccgOffcanvas">
+                            view columns
+                        </button>
+                        <div class="offcanvas offcanvas-start" tabindex="-1" id="ccgOffcanvas" >
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasExampleLabel">columns to display</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                              </div>
+                            <div class="d-flex flex-wrap overflow-auto" id="columnCardGroup"></div>
+                        </div>
+                        <div id="displayCardGroup" class="d-flex flex-wrap">
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

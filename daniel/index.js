@@ -37,7 +37,6 @@ async function cache_data(file,dta){
         let s = new Set(array.map((row)=>row[indx]))
         data.unique_values[colname] = Array.from(s.values())
     }
-    console.log(data)
 
     dataDB.setItem(file, data)
 }
@@ -49,7 +48,6 @@ async function loadFiles(){
             // if the data is already cached... don't waste your time
             if (!dbKeys.includes(file)){
                 let dta=await url_read_excel(`${baseURL+encodeURIComponent(file)}`)
-                console.log(dta)
                 cache_data(file,dta)
             }else{
                 console.log(`file ${file} already cached..`)
@@ -59,8 +57,12 @@ async function loadFiles(){
 }
 
 
-function displayResults(){
-    build_filtered_table()
+async function displayResults(){
+    /// Filter the Data...
+    let selected = document.getElementById("colpoEl").value
+    let all_data = await dataDB.getItem(files[selected])
+    build_filtered_table(all_data)
+    build_column_cards(all_data)
 }
 
 function build_select_element(title,options){
@@ -81,7 +83,6 @@ function build_select_element(title,options){
         selectElement.insertAdjacentElement("beforeend",opt)
     })
 
-    console.log(selectElement)
     return selectElement
 }
 function build_card(title,options){
@@ -115,6 +116,28 @@ function build_input_cards(unique_values){
         cards.insertAdjacentElement('beforeend',build_card(value,unique_values[value])) 
     }
 }
+function build_display_card(header,data){
+    // build the card and the card body...
+    let card = document.createElement('div')
+    card.classList.add("card")
+    card.id=`display_card_${encodeURIComponent(header)}`
+
+    let cardBody = document.createElement('div')
+    cardBody.classList.add("card-body")
+    card.insertAdjacentElement("beforeend",cardBody)
+
+    let cardTitle = document.createElement('div')
+    cardTitle.classList.add("card-title","h6")
+    cardTitle.insertAdjacentText("afterbegin",header)
+    cardBody.insertAdjacentElement("beforeend",cardTitle)
+
+    let cardText = document.createElement('div')
+    cardText.classList.add("card-text")
+    cardText.insertAdjacentText("beforeend", `DISPLAY FOR ${header}`)
+    cardBody.insertAdjacentElement("beforeend",cardText)
+    
+    return card
+}
 
 async function fillFileElement(){
     // fill the input with the filename...
@@ -143,21 +166,14 @@ function getHeader(sheet) {
     return header
 }
 
-async function build_filtered_table(){    
+function build_filtered_table(all_data){    
 
-    /// Filter the Data...
-    let selected = document.getElementById("colpoEl").value
-    let all_data = await dataDB.getItem(files[selected])
-    
     let cardGroup = document.getElementById("cardGroup")
-    console.log( cardGroup.querySelectorAll("select[data-colname]")) 
     //build complex filter...
     let filter_object = Array.from(cardGroup.querySelectorAll("select[data-colname]")).reduce( (prev,curr)=>{
-        console.log(curr.dataset)
         prev[curr.dataset.colname] = all_data.unique_values[curr.dataset.colname][curr.value] ?? "*"
         return prev
     }, {});
-    console.log(filter_object)
 
     let filtered_data = all_data.rows.filter( (row) => {
         for (const [key,value] of Object.entries(filter_object) ){
@@ -171,7 +187,6 @@ async function build_filtered_table(){
         }
         return true
     } );
-    console.log("fd:",filtered_data)
 
     // build the table...
     let resTable = document.getElementById("resTable")
@@ -196,9 +211,43 @@ async function build_filtered_table(){
     })
 }
 
+function columnChanged(event){
+    let header= event.target.value;
+    let displayCardGroup = document.getElementById("displayCardGroup")
+    if (event.target.checked){
+        // build the display card and add it to...
+        displayCardGroup.insertAdjacentElement("beforeend",build_display_card(header))
+    } else {
+        // remove the display card from ...
+        let child = document.getElementById(`display_card_${encodeURIComponent(header)}`)  
+        displayCardGroup.removeChild(child)
+    }
+}
+
+function build_column_cards(all_data){
+    function build_col_card(header){
+        let card = document.createElement('div');
+        card.classList.add("columnCard");
+        let cbox = document.createElement('input');
+        cbox.type="checkbox";
+        cbox.value=header;
+        cbox.id="col_"+header;
+        cbox.name="column_input";
+        cbox.addEventListener("change",columnChanged)
+        card.insertAdjacentElement("beforeend",cbox);
+        let cbox_label = document.createElement('label');
+        cbox_label.htmlFor=cbox.id;
+        cbox_label.innerText=header;
+        card.insertAdjacentElement("beforeend",cbox_label)
+        return card
+    }
+    let group = document.getElementById("columnCardGroup")
+    group.innerText=""
+    all_data.headers.forEach( (header)=> group.insertAdjacentElement("beforeend",build_col_card(header)) )
+}
+
 function build_table(tableElement, data, sheet="") {
 
-    console.log(`calling build_table ${sheet}`)
     function isFloat(x) {
         return !isNaN(parseFloat(x)) && !Number.isInteger(parseFloat(x))
     }
@@ -206,7 +255,6 @@ function build_table(tableElement, data, sheet="") {
         return (Math.round(x * 10000) / 10000).toFixed(4)
     }
 
-    console.log(data)
     if (sheet=="") {
         sheet=data.sheets[0]
     }
@@ -225,7 +273,6 @@ function build_table(tableElement, data, sheet="") {
 
     // build the table body...
     let tBody = tableElement.createTBody();
-    console.log(data.data)
     data.data.forEach((row, index) => {
         tr = tableElement.insertRow()
         row.forEach((col, indx) => {
@@ -234,19 +281,17 @@ function build_table(tableElement, data, sheet="") {
             td.innerText = (isFloat(col)) ? rnd4(col) : col;
         })
     })
-    console.log(data.data)
 }
-
 
 
 
 await loadFiles()
 document.getElementById("colpoEl").addEventListener("change", async () => {
     await fillFileElement()
-    build_filtered_table()
+    displayResults()
 })
 await fillFileElement()
-build_filtered_table() 
+displayResults() 
 
 
 

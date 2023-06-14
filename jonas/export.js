@@ -26,7 +26,7 @@ function UI(div=document.getElementById('vizDiv')){
     if(typeof(div)=='string'){ // you can also call it by the id
         div=document.getElementById(div)
     }
-    div.innerHTML='select data table <select id="selTable"></select> <span id="source">...</span>'
+    div.innerHTML='Data table <select id="selTable"></select> <span id="source">...</span>'
     let selTable = div.querySelector('#selTable')
     tbls.forEach(x=>{
         //console.log(x)
@@ -78,18 +78,18 @@ async function tabulate(tabDiv,tb){
     })
     let h = '<h2> User attributes</h2>'
     df.conds.forEach(k=>{
-        h += `<p>${k}:<select id="${k}">; `
+        h += `<p>${k}:<select class="userAttributesSelect" id="${k}">; `
         df.vals[k].forEach(v=>{
             h += `<option>${v}</option>`
         })
-        h += `</select> <input type="checkbox" checked="true"></p>`
+        h += `</select> <input type="checkbox" checked="true" class="userAttributesInput" id="${k}"></p>`
         // h += `<div id="${k}"><h3>${k}:<h3></div>`
     })
     h += `<h2>Population values</h2>`
     df.cols.slice(df.conds.length).forEach(k=>{
-        h+=`<p>`
-        h+=`${k} <input type="checkbox">`
-        h+=`</p>`
+        h+=`<br>`
+        h+=`${k} <input type="checkbox" class="popValuesInput">`
+        h+=`<div hidden="true" class="popValuesDiv" id="${k}"></div>`
     })
     tabDiv.innerHTML=h
     //debugger

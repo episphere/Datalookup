@@ -114,7 +114,8 @@ function calculate(activators,el){
     let dfi=dataObj[url].df
     // calculate
     let els = activators // all elements involved in the displaying
-    //console.log(els,el,dfi,dataObj)
+    // console.log(els,el,dfi,dataObj)
+    console.log('trigger:',el,el.type=='checkbox'?el.checked:el.value)
 }
 
 async function readURL(url){

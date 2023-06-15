@@ -6,7 +6,7 @@
 
 let read = (await import('https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs')).read
 let sheet_to_json = (await import('https://cdn.sheetjs.com/xlsx-0.19.3/package/xlsx.mjs')).utils.sheet_to_json
-let df = [] // the current sheet dataframe (for debugging)
+//let df = [] // the current sheet dataframe (for debugging)
 let dataObj={} // read and cache here
 
 // default tables
@@ -58,7 +58,7 @@ async function tabulate(tabDiv,tb){
     },500)
     // organize a data frame
     //let df={  // exported
-    df={
+    let df={
         cols:Object.keys(dt.sheet[0]), // column name in order, left to right
         rows:{} // rows in order, top to bottom
     }
@@ -76,6 +76,7 @@ async function tabulate(tabDiv,tb){
         df.vals[k]=[]
         df.vals[k]=[...new Set(df.rows[k])]
     })
+    dataObj[url].df=df
     let h = '<h2> User attributes</h2>'
     df.conds.forEach(k=>{
         h += `<p>${k}:<select class="userAttributesSelect" id="${k}">; `
@@ -93,6 +94,27 @@ async function tabulate(tabDiv,tb){
     })
     tabDiv.innerHTML=h
     //debugger
+    setTimeout(activate,200)
+}
+
+function activate(){ // activates all input check boxes and selects with an event listener to calculate population values
+    // collect activators
+    let activators = [...document.querySelectorAll('input')].concat(
+    [...document.querySelectorAll('.userAttributesSelect')])
+    // activate calculation in response to each of them
+    activators.forEach(el=>{
+        //el.onchange=()=>{console.log(el)}
+        el.onchange=function(){calculate(activators,this)} // not sure you need this element 
+    })
+}
+
+function calculate(activators,el){
+    // picking data frame from shared dataObj 
+    let url=`${location.origin+location.pathname.replace(/[^\/]+\/$/,'')}data/${encodeURIComponent(document.body.querySelector('#selTable').value)}`
+    let dfi=dataObj[url].df
+    // calculate
+    let els = activators // all elements involved in the displaying
+    //console.log(els,el,dfi,dataObj)
 }
 
 async function readURL(url){
@@ -110,7 +132,7 @@ export {
     tbls,
     UI,
     read,
-    df, // for debugging
+    //df, // for debugging
     dataObj
 }
 

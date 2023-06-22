@@ -92,6 +92,7 @@ async function tabulate(tabDiv,tb){
         h+=`${k} <input type="checkbox" class="popValuesInput">`
         h+=`<div hidden="true" class="popValuesDiv" id="${k}"></div>`
     })
+    dataObj[url].tabDiv=tabDiv
     tabDiv.innerHTML=h
     //debugger
     setTimeout(activate,200)
@@ -108,14 +109,23 @@ function activate(){ // activates all input check boxes and selects with an even
     })
 }
 
-function calculate(activators,el){
+function calculate(activators,el,tabDiv){
     // picking data frame from shared dataObj 
     let url=`${location.origin+location.pathname.replace(/[^\/]+\/$/,'')}data/${encodeURIComponent(document.body.querySelector('#selTable').value)}`
+    //tabDiv = tabDiv ? dataObj[url].tabDiv
+    if(!tabDiv){
+        tabDiv=dataObj[url].tabDiv
+    }
     let dfi=dataObj[url].df
     // calculate
     let els = activators // all elements involved in the displaying
     // console.log(els,el,dfi,dataObj)
     console.log('trigger:',el,el.type=='checkbox'?el.checked:el.value)
+    // segment reccords by valid user attributes
+    let userAttr=dfi.conds.filter(x=>{
+        return (el.parentElement.querySelector('input').value=='on')
+    })
+    debugger
 }
 
 async function readURL(url){

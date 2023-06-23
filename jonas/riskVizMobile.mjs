@@ -122,10 +122,13 @@ function calculate(activators,el,tabDiv){
     // console.log(els,el,dfi,dataObj)
     console.log('trigger:',el,el.type=='checkbox'?el.checked:el.value)
     // segment reccords by valid user attributes
+    // console.log(dfi.conds) // available user attributes
     let userAttr=dfi.conds.filter(x=>{
-        return (el.parentElement.querySelector('input').value=='on')
+        return ([...tabDiv.querySelectorAll(`#${CSS.escape(x)}`)].filter(e=>(e.type=='checkbox'))[0]).checked
     })
-    debugger
+    console.log('----------------\n active user filters:')
+    console.log(userAttr)
+    //debugger
 }
 
 async function readURL(url){

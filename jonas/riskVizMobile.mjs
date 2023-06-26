@@ -168,6 +168,12 @@ function calculate(activators,el,tabDiv){
                 case 'count':
                     funCount(divk,popValues,userValues);
                     break;
+                case 'countPercent':
+                    funCountPercent(divk,popValues,userValues);
+                    break;
+                case 'countUndefined':
+                    funCountUndefined(divk,popValues,userValues);
+                    break;
                 default:
                     funNotSupported(divk,popValues,userValues)
                     break
@@ -182,18 +188,36 @@ function calculate(activators,el,tabDiv){
 
 function dataType(k,vals){
     let tps=[...new Set(vals.map(x=>typeof(x)))] // value types
-    if((tps.length==1)&tps[0]=='number'){
-        if((vals.reduce((a,b)=>Math.max(a,b))>1)&(vals.reduce((a,b)=>Math.min(a,b))>=0)){
-            return 'count' // all values are positive and maximjm value is bigger than 1
-        }
-    }
-    //let guess_data_type
+    if((vals.reduce((a,b)=>Math.max(a,b))>1)&(vals.reduce((a,b)=>Math.min(a,b))>=0)){
+        return 'count' // all values are positive and maximjm value is bigger than 1
+    } else if(k=='%'){
+        return 'countPercent'
+    } else if(JSON.stringify(tps.sort())=='["number","undefined"]'){
+        //let guess_data_type
+        return 'countUndefined'
+    } else if(true){
+        debugger
+    }    
 }
 
 function funCount(divk,popValues,userValues){
     let popValuesN=popValues.reduce((a,b)=>a+b)
     let userValuesN=userValues.reduce((a,b)=>a+b)
-    divk.innerHTML=`N = ${Math.round(userValuesN)} / ${Math.round(popValuesN)} (${100*Math.round(10000*userValuesN/popValuesN)/10000}%)`
+    divk.innerHTML=`N = ${parseFloat(userValuesN).toFixed(0)} / ${parseFloat(popValuesN).toFixed(0)} = (${parseFloat(100*userValuesN/popValuesN).toFixed(2)}%)`
+    let debug_funCount
+}
+
+function funCountPercent(divk,popValues,userValues){
+    let popValuesN=popValues.reduce((a,b)=>a+b)
+    let userValuesN=userValues.reduce((a,b)=>a+b)
+    divk.innerHTML=`% = ${parseFloat(userValuesN).toFixed(3)} / ${parseFloat(popValuesN).toFixed(3)} = (${parseFloat(100*userValuesN/popValuesN).toFixed(3)}%)`
+    let debug_funCount
+}
+
+function funCountUndefined(divk,popValues,userValues){
+    let popValuesN=popValues.filter(x=>typeof(x)!='undefined').reduce((a,b)=>a+b)
+    let userValuesN=userValues.filter(x=>typeof(x)!='undefined').reduce((a,b)=>a+b)
+    divk.innerHTML=`N|defined = ${parseFloat(userValuesN).toFixed(0)} / ${parseFloat(popValuesN).toFixed(0)} = (${parseFloat(100*userValuesN/popValuesN).toFixed(3)}%)`
     let debug_funCount
 }
 

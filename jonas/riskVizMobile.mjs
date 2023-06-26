@@ -143,9 +143,9 @@ function calculate(activators,el,tabDiv){
             let val = tabDiv.querySelector(`#${CSS.escape(k)}`).value
             if(r[k]!=val){
                 res = false
-                //console.log(i, k,r[k],val,res)
+                console.log(i, k,r[k],val,res)
             }else{
-                //console.log(i, k,r[k],val,true)
+                console.log(i, k,r[k],val,true)
             }
         })
         return res

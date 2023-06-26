@@ -89,8 +89,10 @@ async function tabulate(tabDiv,tb){
     h += `<h2>Population values</h2>`
     df.cols.slice(df.conds.length).forEach(k=>{
         h+=`<br>`
-        h+=`${k} <input type="checkbox" class="popValuesInput">`
+        h+=`<span>`
+        h+=`<span style="color:maroon">${k}</span> <input type="checkbox" class="popValuesInput">`
         h+=`<div hidden="true" class="popValuesDiv" id="${k}"></div>`
+        h+=`</span>`
     })
     dataObj[url].tabDiv=tabDiv
     tabDiv.innerHTML=h
@@ -150,8 +152,53 @@ function calculate(activators,el,tabDiv){
         })
         return res
     })
-    let lala_filtered_finished
-    // Population values 
+    let debug_filtered_finished
+    // Screen population values with user attributes
+    dfi.cols.slice(dfi.conds.length).forEach((k,i)=>{
+        // check this is an active condition
+        //tabDiv.querySelector(`#${CSS.escape(k)}`).value
+        let divk = tabDiv.querySelector(`#${CSS.escape(k)}`)
+        if(divk.parentNode.querySelector('input').checked){
+            divk.hidden=false
+            let popValues = rows.map(x=>x[k])
+            let userValues = filteredRows.map(x=>x[k])
+            divk.innerHTML=`${Date()}`
+            // guess data type
+            switch (dataType(k,popValues)){
+                case 'count':
+                    funCount(divk,popValues,userValues);
+                    break;
+                default:
+                    funNotSupported(divk,popValues,userValues)
+                    break
+            }
+            let debug_checked_active_conditions
+        }else{
+            divk.hidden=true
+        }
+            
+    })
+}
+
+function dataType(k,vals){
+    let tps=[...new Set(vals.map(x=>typeof(x)))] // value types
+    if((tps.length==1)&tps[0]=='number'){
+        if((vals.reduce((a,b)=>Math.max(a,b))>1)&(vals.reduce((a,b)=>Math.min(a,b))>=0)){
+            return 'count' // all values are positive and maximjm value is bigger than 1
+        }
+    }
+    //let guess_data_type
+}
+
+function funCount(divk,popValues,userValues){
+    let popValuesN=popValues.reduce((a,b)=>a+b)
+    let userValuesN=userValues.reduce((a,b)=>a+b)
+    divk.innerHTML=`N = ${Math.round(userValuesN)} / ${Math.round(popValuesN)} (${100*Math.round(100*userValuesN/popValuesN)/100}%)`
+    let debug_funCount
+}
+
+function funNotSupported(divk,popValues,userValues){
+    divk.innerHTML='type no supported yet'
 }
 
 async function readURL(url){

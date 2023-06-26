@@ -193,7 +193,7 @@ function dataType(k,vals){
 function funCount(divk,popValues,userValues){
     let popValuesN=popValues.reduce((a,b)=>a+b)
     let userValuesN=userValues.reduce((a,b)=>a+b)
-    divk.innerHTML=`N = ${Math.round(userValuesN)} / ${Math.round(popValuesN)} (${100*Math.round(100*userValuesN/popValuesN)/100}%)`
+    divk.innerHTML=`N = ${Math.round(userValuesN)} / ${Math.round(popValuesN)} (${100*Math.round(10000*userValuesN/popValuesN)/10000}%)`
     let debug_funCount
 }
 

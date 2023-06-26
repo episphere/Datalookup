@@ -162,7 +162,7 @@ function calculate(activators,el,tabDiv){
             divk.hidden=false
             let popValues = rows.map(x=>x[k])
             let userValues = filteredRows.map(x=>x[k])
-            divk.innerHTML=`no values`
+            divk.innerHTML=`calculating ...`
             // guess data type
             switch (dataType(k,popValues)){
                 case 'count':

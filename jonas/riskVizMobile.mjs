@@ -128,7 +128,30 @@ function calculate(activators,el,tabDiv){
     })
     console.log('----------------\n active user filters:')
     console.log(userAttr)
-    //debugger
+    // create rows array
+    let rows = dfi.rows[dfi.cols[0]].map((r,i)=>{
+        let obj={}
+        dfi.cols.forEach(k=>{
+            obj[k]=dfi.rows[k][i]
+        })
+        return obj
+    })
+    let filteredRows=rows.filter((r,i)=>{
+        // filter for active user attributes
+        let res = true
+        userAttr.forEach(k=>{
+            let val = tabDiv.querySelector(`#${CSS.escape(k)}`).value
+            if(r[k]!=val){
+                res = false
+                //console.log(i, k,r[k],val,res)
+            }else{
+                //console.log(i, k,r[k],val,true)
+            }
+        })
+        return res
+    })
+    let lala_filtered_finished
+    // Population values 
 }
 
 async function readURL(url){

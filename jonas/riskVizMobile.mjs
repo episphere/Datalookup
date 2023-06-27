@@ -87,6 +87,7 @@ async function tabulate(tabDiv,tb){
         // h += `<div id="${k}"><h3>${k}:<h3></div>`
     })
     h += `<h2>Population values</h2>`
+    h+=`<div id="popValuesDiv" style="overflow-y:auto;height:30em">` //overflow-y: auto
     df.cols.slice(df.conds.length).forEach(k=>{
         h+=`<br>`
         h+=`<span>`
@@ -94,6 +95,7 @@ async function tabulate(tabDiv,tb){
         h+=`<div hidden="true" class="popValuesDiv" id="${k}"></div>`
         h+=`</span>`
     })
+    h+=`</div>`
     dataObj[url].tabDiv=tabDiv
     tabDiv.innerHTML=h
     //debugger
@@ -196,7 +198,7 @@ function dataType(k,vals){
         //let guess_data_type
         return 'countUndefined'
     } else if(true){
-        debugger
+        console.log('type not supported yet')
     }    
 }
 

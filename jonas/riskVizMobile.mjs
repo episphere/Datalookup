@@ -15,7 +15,10 @@ const tbls = [
     //"General Table for Post-Treatment_v2.xlsx",
     //"General Table for Risk Following Colposcpy.xlsx",
     "General Table for Screening v5.xlsx",
-    "General Table for Surveillance_v6.xlsx"
+    "General Table for Surveillance_v6.xlsx",
+    "No history cotest.xlsx",
+    "separate with only all.xlsx",
+    "without all.xlsx"
 ]
 
 function UI(div=document.getElementById('vizDiv')){

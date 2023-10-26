@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="./riskviz_old.js" type="module"></script>
+
+    <style>
+        .fsz-sm {
+            font-size: small;
+        }
+        .bg-ncired {
+            background-color: #bb0e3d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-ncired sticky-top" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="navbar-brand" href="#">RiskViz</div>
+        </div>
+    </nav>
+
+
+    <div class="row m-3">
+        <div class="col-12 col-md-6 my-1">
+            <label for="scenarioSelect">Scenario</label>
+            <select id="scenarioSelect" class="form-select form-select-sm"></select>
+        </div>
+        <div class="col-12 col-md-6 fs-6 my-1" id="scDiv">
+            <label id="fsLabel" for="fileSelect">dataset</label>
+            <select id="fileSelect" class="form-select form-select-sm"></select>
+        </div>
+    </div>
+
+    <div class="row mx-3 my-1 gx-3">
+        <div class="col-12 col-lg-6 col-xxl-4">
+            <div class="card" id="CIN2+">
+                <div class="card-body">
+                    <h5 class="card-title border-bottom" >CIN 2+</h5>   
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Risk (%)</th>
+                                <th>SE</th>
+                                <th>LL-95</th>
+                                <th>UL-95</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>                 
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xxl-4">
+            <div class="card" id="CIN3+">
+                <div class="card-body">
+                    <h5 class="card-title border-bottom" >CIN 3+</h5>   
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Risk (%)</th>
+                                <th>SE</th>
+                                <th>LL-95</th>
+                                <th>UL-95</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>                 
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xxl-4" >
+            <div class="card" id="CANCER">
+                <div class="card-body">
+                    <h5 class="card-title border-bottom" >Cancer</h5>   
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Risk (%)</th>
+                                <th>SE</th>
+                                <th>LL-95</th>
+                                <th>UL-95</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="overflow-scroll ">
+        <table class="table table-small fsz-sm table-striped mx-3" id="data-table">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <nav class="navbar fixed-bottom navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="fs-6" id="sizediv"></div>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+{
+    "scenarios": [
+        {
+            "name": "Risk Following Colposcpy",
+            "files": [
+                {
+                    "path": "data/General Table for Risk Following Colposcpy.xlsx",
+                    "select": "All"
+                }
+            ],
+            "label": "Risk"
+        },
+        {
+            "name": "Post Colpo",
+            "files": [
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo.xlsx",
+                    "select": "No History"
+                },
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo_Past_HPVnegative.xlsx",
+                    "select": "HPV-negative"
+                },
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo_Past_HPVnegative_x2.xlsx",
+                    "select": "HPV-negative x2"
+                },
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative.xlsx",
+                    "select": "Cotest-negative"
+                },
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative_x2.xlsx",
+                    "select": "Cotest-negative x2"
+                },
+                {
+                    "path": "data/General Table for Post-Colpo/Post-Colpo_LowGrade_Past_HPVnegative_ASCUSorLSIL.xlsx",
+                    "select": "HPV-negative/ASCUS/LSIL"
+                }
+            ],
+            "label": "Post-Colpo Test Result - PAST HISTORY"
+        },
+        {
+            "name": "Post Treatment",
+            "files": [
+                {
+                    "path": "data/General Table for Post-Treatment/Post-Treatment_no past.xlsx",
+                    "select": "No History"
+                },
+                {
+                    "path": "data/General Table for Post-Treatment/Post-Treatment_past_cotestnegative.xlsx",
+                    "select": "Cotest-negative"
+                },
+                {
+                    "path": "data/General Table for Post-Treatment/Post-Treatment_past_cotestnegativex2.xlsx",
+                    "select": "Cotest-negative x2"
+                },
+                {
+                    "path": "data/General Table for Post-Treatment/Post-Treatment_past_HPVnegative.xlsx",
+                    "select": "HPV-negative"
+                },
+                {
+                    "path": "data/General Table for Post-Treatment/Post-Treatment_past_HPVnegativex2.xlsx",
+                    "select": "HPV-negative x2"
+                }
+            ],
+            "label": "Biopsy Result Before Treatment"
+        },
+        {
+            "name": "Screening",
+            "files": [
+                {
+                    "path": "data/General Table for Screening/No history cotest.xlsx",
+                    "select": "No History"
+                },
+                {
+                    "path": "data/General Table for Screening/No history cotest with genotyping.xlsx",
+                    "select": "No History with Genotyping"
+                },
+                {
+                    "path": "data/General Table for Screening/Past_cotestnegative_cotest.xlsx",
+                    "select": "Past Cotest-negative"
+                },
+                {
+                    "path": "data/General Table for Screening/Past_cotestnegative_cotest with genotyping.xlsx",
+                    "select": "Past Cotest-negative with Genotyping"
+                },
+                {
+                    "path": "data/General Table for Screening/Past_HPVnegative_cotest.xlsx",
+                    "select": "HPV-negative"
+                },
+                {
+                    "path": "data/General Table for Screening/Past_HPVnegative_cotest with genotyping.xlsx",
+                    "select": "HPV-negative with Genotyping"
+                }
+            ],
+            "label": "PAST HISTORY (most recent)"
+        },
+        {
+            "name": "Surveillance",
+            "files": [
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVnegative_ASCUS.xlsx",
+                    "select": "HPV-negative/ASC-US"
+                },
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVnegative_LSIL.xlsx",
+                    "select": "HPV-negative/LSIL"
+                },
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVpositive_NILM.xlsx",
+                    "select": "HPV-positive/NILM"
+                },
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVpositive_NILM with genotyping.xlsx",
+                    "select": "HPV-positive/NILM with Genotyping"
+                },
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVpositive_NILM_AND_cotestnegative.xlsx",
+                    "select": "Cotest-negative and HPV-positive/NILM"
+                },
+                {
+                    "path": "data/General Table for Surveillance/Past_HPVpositive_NILM_AND_HPVnegative.xlsx",
+                    "select": "HPV-negative and HPV-positive/NILM"
+                }
+            ],
+            "label": "PAST HISTORY (most recent)"
+        }
+    ],
+    "cards": {
+        "name":["CIN2+","CIN3+","CANCER"],
+        "models" : [
+            {"name":"Immediate","pattern":"[Ii]mmediate"},
+            {"name":"1-year","pattern":"1[-\\s]year"},
+            {"name":"2-year","pattern":"2[-\\s]year"},
+            {"name":"3-year","pattern":"3[-\\s]year"},
+            {"name":"4-year","pattern":"4[-\\s]year"},
+            {"name":"5-year","pattern":"5[-\\s]year"}
+        ],        
+        "Risk": [
+            "Immediate risk (%)",
+            "1 year risk  (%)",
+            "2 year risk  (%)",
+            "3 year risk  (%)",
+            "4 year risk  (%)",
+            "5 year risk  (%)"
+        ],
+        "SE":[
+            "SE immediate",
+            "SE 1-year",
+            "SE 2-year",
+            "SE 3-year",
+            "SE 4-year",
+            "SE 5-year"
+        ],
+        "LL-95": [
+            "LL95 immediate",
+            "LL95 1-year",
+            "LL95 2-year",
+            "LL95 3-year",
+            "LL95 4-year",
+            "LL95 5-year"
+        ],
+        "UL-95": [
+            "UL95 immediate",
+            "UL95 1-year",
+            "UL95 2-year",
+            "UL95 3-year",
+            "UL95 4-year",
+            "UL95 5-year"
+        ]
+    }
+}

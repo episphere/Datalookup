@@ -219,6 +219,7 @@ function clearNextQuestions(selectElement){
     }
     document.querySelector("#data-table thead").innerText=""
     document.querySelector("#data-table tbody").innerText=""
+    document.querySelector("#cardsDiv").innerText=""
 }
 
 async function read_xl(path){

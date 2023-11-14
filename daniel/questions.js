@@ -31,7 +31,7 @@ let questions={
                     allowedValues:["HPV16+","HPV16-, HPV18+","HPV16/18-, Other+"]
                 },{
                     name:"Current PAP Result",
-                    allowedValues:["NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
                 }]
             },
             {
@@ -39,7 +39,7 @@ let questions={
                 table: "General Table for Screening/No history cotest.xlsx",
                 cols: [{
                     name:"Current HPV Result",
-                    allowedValues:["HPV-negative","HPV-positive"]
+                    allowedValues:["None","HPV-negative","HPV-positive"]
                 },{
                     name:"Current PAP Result",
                     allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
@@ -79,11 +79,28 @@ let questions={
             },
             {
                 text:"HPV-negative ASC-US",
-                table: "General Table for Surveillance/Past_HPVnegative_ASCUS.xlsx"
+                table: "General Table for Surveillance/Past_HPVnegative_ASCUS.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             },
             {
                 text:"HPV-negative LSIL",
-                table: "General Table for Surveillance/Past_HPVnegative_LSIL.xlsx"
+                table: "General Table for Surveillance/Past_HPVnegative_LSIL.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
+            },            {
+                text:"HPV-Positive NILM",
+                next: "question7"
             },
         ]
     },
@@ -93,11 +110,25 @@ let questions={
         responses:[
             {
                 text:"Yes",
-                table: "General Table for Screening/Past_cotestnegative_cotest with genotyping.xlsx"
+                table: "General Table for Screening/Past_cotestnegative_cotest with genotyping.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["HPV16+","HPV16-, HPV18+","HPV16/18-, Other+"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","High Grade"]
+                }]
             },
             {
                 text:"No",
-                table: "General Table for Screening/Past_cotestnegative_cotest.xlsx"
+                table: "General Table for Screening/Past_cotestnegative_cotest.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             },
         ]
     },
@@ -107,11 +138,25 @@ let questions={
         responses:[
             {
                 text:"Yes",
-                table: "General Table for Screening/Past_HPVnegative_cotest with genotyping.xlsx"
+                table: "General Table for Screening/Past_HPVnegative_cotest with genotyping.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["HPV16+","HPV16-, HPV18+","HPV16/18-, Other+"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","High Grade"]
+                }]
             },
             {
                 text:"No",
-                table: "General Table for Screening/Past_HPVnegative_cotest.xlsx"
+                table: "General Table for Screening/Past_HPVnegative_cotest.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             },
         ]
     },
@@ -121,11 +166,25 @@ let questions={
         responses:[
             {
                 text:"Yes",
-                table: "General Table for Surveillance/Past_HPVpositive_NILM with genotyping.xlsx"
+                table: "General Table for Surveillance/Past_HPVpositive_NILM with genotyping.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["HPV16+","HPV16-, HPV18+","HPV16/18-, Other+"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","High Grade"]
+                }]
             },
             {
                 text:"No",
-                table: "General Table for Surveillance/Past_HPVpositive_NILM.xlsx"
+                table: "General Table for Surveillance/Past_HPVpositive_NILM.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             },
         ]
     },
@@ -139,7 +198,17 @@ let questions={
             },
             {
                 text:"No",
-                table: "General Table for Post-Colpo/Post-Colpo.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo.xlsx",
+                cols: [{
+                    name:"Pre-Colpo Test Result",
+                    allowedValues:["Low Grade","High Grade"]
+                },{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US/LSIL","High Grade"]
+                }]
             }, 
         ]
     },
@@ -149,23 +218,52 @@ let questions={
         responses: [
             {
                 text: "Cotest-negative",
-                table: "General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative.xlsx",
+                cols: [{
+                    name:"Pre-Colpo Test Result",
+                    allowedValues:["Low Grade","High Grade"]
+                },{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US/LSIL","High Grade"]
+                }]
             },
             {
                 text: "Cotest-negative x2",
-                table: "General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative_x2.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo_Past_Cotestnegative_x2.xlsx",
+                cols: [{
+                    name:"Pre-Colpo Test Result",
+                    allowedValues:["Low Grade","High Grade"]
+                }]
             },
             {
                 text: "HPV-negative",
-                table: "General Table for Post-Colpo/Post-Colpo_Past_HPVnegative.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo_Past_HPVnegative.xlsx",
+                cols: [{
+                    name:"Pre-Colpo Test Result",
+                    allowedValues:["Low Grade","High Grade"]
+                }]
             },
             {
                 text: "HPV-negative x2",
-                table: "General Table for Post-Colpo/Post-Colpo_Past_HPVnegative_x2.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo_Past_HPVnegative_x2.xlsx",
+                cols: [{
+                    name:"Pre-Colpo Test Result",
+                    allowedValues:["Low Grade","High Grade"]
+                }]
             },
             {
                 text: "HPV-negative ASC-US/LSIL",
-                table: "General Table for Post-Colpo/Post-Colpo_LowGrade_Past_HPVnegative_ASCUSorLSIL.xlsx"
+                table: "General Table for Post-Colpo/Post-Colpo_LowGrade_Past_HPVnegative_ASCUSorLSIL.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US/LSIL","High Grade"]
+                }]
             },
         ]
     },
@@ -179,7 +277,14 @@ let questions={
             },
             {
                 text:"No",
-                table: "General Table for Post-Treatment/Post-Treatment_no past.xlsx"
+                table: "General Table for Post-Treatment/Post-Treatment_no past.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["None","HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US/LSIL","High Grade"]
+                }]
             }, 
         ]
     },
@@ -382,19 +487,27 @@ function questionsAboutTable(questionResponse,divElement){
         })
         // deal with the event listener
         selectElement.addEventListener("change", (event => {
-            let colNames = questionResponse.cols.reduce( (acc,cv) => {
+            let colNames = questionResponse.cols.reduce((acc, cv) => {
                 acc.push(cv.name)
                 return acc
-            },[])
+            }, [])
 
-            let selectionObj = Array.from( wrapper.querySelectorAll("select") ).reduce( (acc,cv) => {
+            let selectionObj = Array.from(wrapper.querySelectorAll("select")).reduce((acc, cv) => {
                 acc[cv.name] = {
-                    value:cv.value,
-                    text:cv.item(cv.value).innerText
+                    value: cv.value,
+                    text: cv.item(cv.value).innerText
                 }
-                acc.ok = (cv.value>0) && acc.ok
+                acc.ok = (cv.value > 0) && acc.ok
                 return acc
-            },{ok:true})
+            }, { ok: true })
+            let cntNone = colNames.reduce((acc, col) =>
+                (selectionObj[col].text == "None")?(acc + 1):acc
+                , 0)
+            // the user has selected "None" and "None"... not 
+            // a valid case..  Dont display anything and dont
+            // waste time reading the data...
+            if (cntNone > 1) return 
+
             if (selectionObj.ok){
                 read_xl(questionResponse.table).then(data => {
                     console.log(data)
@@ -405,8 +518,7 @@ function questionsAboutTable(questionResponse,divElement){
                             data.rows = data.rows.filter( (row,indx) => {
                                 return row[colToFilter] == selectionObj[colToFilter].text
                             })
-                        } else {
-                            
+                        } else {                        
                             // the user selected None, either.  Select the all row, or dont filter...
                             let obj=data.rows.reduce( (acc,current,indx)=>{
                                 acc.hasAll= current[colToFilter] == "ALL" || acc.hasAll

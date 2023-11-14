@@ -25,11 +25,25 @@ let questions={
         responses : [
             {
                 text:"Yes",
-                table: "General Table for Screening/No history cotest with genotyping.xlsx"
+                table: "General Table for Screening/No history cotest with genotyping.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["HPV16+","HPV16-, HPV18+","HPV16/18-, Other+"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             },
             {
                 text:"No",
-                table: "General Table for Screening/No history cotest.xlsx"
+                table: "General Table for Screening/No history cotest.xlsx",
+                cols: [{
+                    name:"Current HPV Result",
+                    allowedValues:["HPV-negative","HPV-positive"]
+                },{
+                    name:"Current PAP Result",
+                    allowedValues:["None","NILM","ASC-US","LSIL","ASC-H","AGC","HSIL+"]
+                }]
             }
         ]
     },
@@ -334,8 +348,9 @@ function makeCards(data){
     })
 }
 
-async function displayTable(tableName,selectElement){
-    let data = await read_xl(tableName)
+//async function displayTable(tableName){
+//    let data = await read_xl(tableName)
+async function displayTable(data){
     makeCards(data)
     makeTable(data)
 }
@@ -344,13 +359,103 @@ function nextQuestion(questionName,rootElement){
     buildQuestion(questions[questionName],rootElement)
 }
 
+function addOptionsToSelect(selectElement,value,html){
+    let optionElement = document.createElement("option")
+    optionElement.value=value
+    optionElement.innerHTML = html
+    selectElement.add(optionElement)
+    return optionElement;
+}
+
+function questionsAboutTable(questionResponse,divElement){
+    
+
+    function buildTableQuestion(question, wrapper) {
+        let { questionElement, selectElement } = createQuestionElement(question.name, question.name)
+        questionElement.classList.add("col")
+
+        let optionElement = addOptionsToSelect(selectElement, 0, " --Please choose an option-- ")
+        // add option elements for each allowedValue
+        question.allowedValues.forEach((value, index) => {
+            // create the option element...
+            optionElement = addOptionsToSelect(selectElement, index + 1, value)
+        })
+        // deal with the event listener
+        selectElement.addEventListener("change", (event => {
+            let colNames = questionResponse.cols.reduce( (acc,cv) => {
+                acc.push(cv.name)
+                return acc
+            },[])
+
+            let selectionObj = Array.from( wrapper.querySelectorAll("select") ).reduce( (acc,cv) => {
+                acc[cv.name] = {
+                    value:cv.value,
+                    text:cv.item(cv.value).innerText
+                }
+                acc.ok = (cv.value>0) && acc.ok
+                return acc
+            },{ok:true})
+            if (selectionObj.ok){
+                read_xl(questionResponse.table).then(data => {
+                    console.log(data)
+                    //filter the table...
+                    colNames.forEach( colToFilter => {
+                        console.log(selectionObj[colToFilter] )
+                        if (selectionObj[colToFilter].text != "None" ){
+                            data.rows = data.rows.filter( (row,indx) => {
+                                return row[colToFilter] == selectionObj[colToFilter].text
+                            })
+                        } else {
+                            
+                            // the user selected None, either.  Select the all row, or dont filter...
+                            let obj=data.rows.reduce( (acc,current,indx)=>{
+                                acc.hasAll= current[colToFilter] == "ALL" || acc.hasAll
+                                if (acc.hasAll){
+                                    acc.row = indx
+                                }
+                                return  acc
+                            },{hasAll:false,row:null})
+                            console.log(obj)
+                            /* WARNING:  This has potential for problems.  If 
+                               we only select 1 row and then filter out the row
+                               in the next iteration of the column name loop,
+                               we run the risk of having no data! */
+                            if (obj.hasAll){
+                                data.rows = [ data.rows[obj.row] ]
+                            }
+                        }
+                        displayTable(data)
+                    })
+                });
+            }
+        }))
+        wrapper.insertAdjacentElement("beforeend", questionElement)
+    }
+
+ 
+
+    // create a wrapper div to hold the table related questions...
+    let rowDiv = document.createElement("div")
+    rowDiv.classList.add("row")
+    questionResponse.cols.map((col) => buildTableQuestion(col,rowDiv))
+    divElement.insertAdjacentElement("beforeend",rowDiv)
+}
+
 function buildEventListener(question,rootElement){
     return function(event){
         clearNextQuestions(this)
         if (event.target.value>0){
             let selection = event.target.value - 1
-            if (question.responses[selection].table){
-                displayTable(question.responses[selection].table,this)
+
+            // we can have both cols/table 
+            // if cols first display the two questions...
+            // else if tables display the table.  if neither
+            // probably need to just ask the next question
+            if (question.responses[selection].cols){
+                questionsAboutTable(question.responses[selection],rootElement)
+            } else if (question.responses[selection].table){
+                read_xl(question.responses[selection].table).then( data => displayTable(data))
+                //displayTable(question.responses[selection].table)
             }
             if (question.responses[selection].next){
                 nextQuestion(question.responses[selection].next,rootElement)
@@ -359,25 +464,35 @@ function buildEventListener(question,rootElement){
     }
 }
 
-function buildQuestion(question,rootElement){
-    document.querySelector("#tableDiv").style.display="none"
+
+function createQuestionElement(name,labelText){
     // create question div
     let questionElement = document.createElement("div")
     questionElement.classList.add("question")
     questionElement.classList.add("my-3")
-    rootElement.insertAdjacentElement("beforeend",questionElement)
 
     // create the label and add to the div
     let labelElement = document.createElement("label")
-    labelElement.innerHTML = question.text
+    labelElement.innerHTML = labelText
+    labelElement.htmlFor = name
     questionElement.insertAdjacentElement("beforeend",labelElement)
 
     // create the select and all the option elements...
     let selectElement = document.createElement("select")
-    selectElement.id = question.name
-    selectElement.name = question.name
+    selectElement.id = name
+    selectElement.name = name
     selectElement.classList.add("form-select")
     questionElement.insertAdjacentElement("beforeend",selectElement)
+    
+    return {questionElement,selectElement}
+}
+
+function buildQuestion(question,rootElement){
+    document.querySelector("#tableDiv").style.display="none"
+    let {questionElement,selectElement}=createQuestionElement(question.name,question.text)
+    rootElement.insertAdjacentElement("beforeend",questionElement)
+
+    // add options
     let optionElement = document.createElement("option")
     optionElement.value="0"
     optionElement.innerText=" --Please choose an option-- "
@@ -388,9 +503,9 @@ function buildQuestion(question,rootElement){
         optionElement.innerHTML = response.text
         selectElement.insertAdjacentElement("beforeend",optionElement)
     })
+
     // create an empty div for the next question...
     // this way we can clear any question
-
     let emptyElement = document.createElement("div")
     emptyElement.id=`${question.name}_nq`
     selectElement.addEventListener("change",buildEventListener(question,emptyElement))

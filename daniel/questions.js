@@ -340,6 +340,7 @@ function clearNextQuestions(selectElement){
     document.querySelector("#data-table thead").innerText=""
     document.querySelector("#data-table tbody").innerText=""
     document.querySelector("#cardsDiv").innerText=""
+    document.querySelector("#plotDiv").innerText=""
 }
 
 async function read_xl(path){
@@ -370,12 +371,20 @@ function makeTableHeader(headElement,data){
 function makeTableBody(bodyElement,data){
     bodyElement.innerText=""
     data.rows.forEach( row=>{
-        let bodyRow = bodyElement.insertRow()
-        bodyRow.insertCell()
-        data.headers.forEach( col => {
-            let cell = bodyRow.insertCell();
-            cell.innerText = row[col] || " ";
-        });
+        if (row[data.headers[0]]?.length>0){
+            let bodyRow = bodyElement.insertRow()
+            bodyRow.insertCell()
+            data.headers.forEach( col => {
+                let cell = bodyRow.insertCell();
+                let txt = row[col] || " " 
+                let intValue = parseInt( txt)
+                if ( !isNaN(intValue) ){
+                    let floatValue = parseFloat( row[col] || " " )
+                    txt = (floatValue == intValue)?intValue:floatValue.toFixed(2)
+                }  
+                cell.innerText = txt;
+            });
+        }
     })
 }
 
@@ -435,7 +444,7 @@ function makeCard(data,card,rootElement){
     cardTitle.innerText=card
     cardTitle.classList.add("card-title","border-bottom")
     cardBody.insertAdjacentElement("beforeend",cardTitle)
-    // add the table
+
     let tableElement = document.createElement("table")
     tableElement.classList.add("table","table-striped")
     cardBody.insertAdjacentElement("beforeend",tableElement)
@@ -535,7 +544,6 @@ function makePlots(data){
         plotly.newPlot( plotDiv, plot2_data, plot2_layout,{responsive:true})
     }
 
-    console.log(".... making plots ...",data)
     let rootElement = document.getElementById("plotDiv")
     rootElement.innerText = ""
     if (!data.headers.includes("CIN2+ SE immediate")) return
@@ -544,8 +552,7 @@ function makePlots(data){
     makePlot1(data,rootElement)
     makePlot2(data,rootElement)
 }
-//async function displayTable(tableName){
-//    let data = await read_xl(tableName)
+
 async function displayTable(data){
     makeCards(data)
     makeTable(data)
@@ -601,10 +608,8 @@ function questionsAboutTable(questionResponse,divElement){
 
             if (selectionObj.ok){
                 read_xl(questionResponse.table).then(data => {
-                    console.log(data)
                     //filter the table...
                     colNames.forEach( colToFilter => {
-                        console.log(selectionObj[colToFilter] )
                         if (selectionObj[colToFilter].text != "None" ){
                             data.rows = data.rows.filter( (row,indx) => {
                                 return row[colToFilter] == selectionObj[colToFilter].text
@@ -618,7 +623,6 @@ function questionsAboutTable(questionResponse,divElement){
                                 }
                                 return  acc
                             },{hasAll:false,row:null})
-                            console.log(obj)
                             /* WARNING:  This has potential for problems.  If 
                                we only select 1 row and then filter out the row
                                in the next iteration of the column name loop,
@@ -725,3 +729,16 @@ document.addEventListener("DOMContentLoaded",(event)=>{
     let rootElement = document.querySelector("form")
     buildQuestion(questions.question1,rootElement)
 })
+
+function clin_res(element){
+    if (element.dataset.value == "research"){
+        document.querySelectorAll('[data-research-only]').forEach(x=>x.classList.remove("d-none"))
+        document.querySelectorAll('[data-clinical-only]').forEach(x=>x.classList.add("d-none"))
+    } else {
+        document.querySelectorAll('[data-research-only]').forEach(x=>x.classList.add("d-none"))
+        document.querySelectorAll('[data-clinical-only]').forEach(x=>x.classList.remove("d-none"))       
+    }
+}
+document.querySelectorAll('input[name="res_clin"]').forEach( x=> x.addEventListener("change",(event)=>{
+    clin_res(event.target)
+}))

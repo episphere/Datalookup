@@ -22,14 +22,22 @@
 <body class="d-flex flex-column">
     <nav class="navbar navbar-expand-lg bg-ncired sticky-top" data-bs-theme="dark">
         <div class="container-fluid">
-            <div class="navbar-brand bg-ncired" href="#">RiskViz</div>
+            <div class="navbar-brand bg-ncired me-auto" href="#">RiskViz</div>
+            <div class="d-flex">
+                <input type="radio" class="btn-check" name="res_clin" id="research" data-value="research" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary" for="research">Research</label>
+                <input type="radio" class="btn-check" name="res_clin" id="clinical" data-value="clinical" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="clinical">Clinical</label>
+            </div>
         </div>
     </nav>
+
+
 
     <form class="mx-3"></form>
     <div id="plotDiv" class="row mx-3 my-1 gx-3"></div>
     <div id="cardsDiv" class="row mx-3 my-1 gx-3"></div>
-    <div id="tableDiv" class="overflow-auto">
+    <div id="tableDiv" class="overflow-auto" data-research-only="true">
         <table class="table table-small fsz-sm table-striped mx-3" id="data-table">
             <thead></thead>
             <tbody></tbody>

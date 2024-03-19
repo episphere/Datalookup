@@ -1,4 +1,5 @@
 import {read_excel_url} from './read_xl.js'
+import plotly from 'https://cdn.jsdelivr.net/npm/plotly.js-dist@2.30.1/+esm'
 
 let questions={
     question1:{
@@ -453,6 +454,96 @@ function makeCards(data){
     })
 }
 
+function makePlots(data){
+    function makePlotCard(rootElement){
+        let plotRoot = document.createElement("div")
+        rootElement.insertAdjacentElement("beforeend",plotRoot)
+        plotRoot.classList.add("col-12","col-lg-6","col-xxl-4")
+
+        let cardRoot = document.createElement("div")
+        cardRoot.classList.add("card")
+        plotRoot.insertAdjacentElement("beforeend",cardRoot)
+        let plotDiv = document.createElement("div")
+        cardRoot.insertAdjacentElement("beforeend",plotDiv)
+        return plotDiv
+    }
+
+    function makePlot1(data,rootElement){        
+        let plotDiv = makePlotCard(rootElement)
+        let y_val = data.headers.filter( (col)=>/^CIN3+.*risk/.test(col)).map( 
+            (col)=> weighted_mean(data.rows,col,"N") )
+
+        let y_max = Math.ceil(Math.max(y_val))
+        let plot1_data = [{
+            x:["Immediate","1-year","2-year","3-year","4-year","5-year"],
+            y:y_val,
+            name: "HPV-positive ASC-US"
+        }]
+        let plot1_layout = {
+            xaxis: {
+                type: 'category',
+                title: 'Time'
+            },
+            yaxis: {
+                range:[0,y_max],
+                title: "CIN3+ Risk (%)"
+            },
+            margin: {
+                t: 50,
+            },
+            title: "Plot 1",
+        };
+        plotly.newPlot( plotDiv, plot1_data, plot1_layout,{responsive:true})
+    }
+    function makePlot2(data,rootElement){
+        let plotDiv = makePlotCard(rootElement)
+        let y1_val = data.headers.filter( (col)=>/^CIN2+.*risk/.test(col)).map( 
+            (col)=> weighted_mean(data.rows,col,"N") )
+        let y2_val = data.headers.filter( (col)=>/^CIN3+.*risk/.test(col)).map( 
+            (col)=> weighted_mean(data.rows,col,"N") )
+        let y3_val = data.headers.filter( (col)=>/^CANCER+.*risk/.test(col)).map( 
+            (col)=> weighted_mean(data.rows,col,"N") )
+
+        let y_max = Math.ceil(Math.max(...y1_val,...y2_val,...y3_val))
+        let plot2_data = [{
+            x:["Immediate","1-year","2-year","3-year","4-year","5-year"],
+            y:y1_val,
+            name: "CIN2+"
+        },{
+            x:["Immediate","1-year","2-year","3-year","4-year","5-year"],
+            y:y2_val,
+            name: "CIN3+"
+        },{
+            x:["Immediate","1-year","2-year","3-year","4-year","5-year"],
+            y:y3_val,
+            name: "Cancer"
+        }]
+        let plot2_layout = {
+            xaxis: {
+                type: 'category',
+                title: 'Time'
+            },
+            yaxis: {
+                range:[0,y_max],
+                title: "Risk (%)"
+            },
+            margin: {
+                t: 50
+            },
+            title: "Plot 2",
+        };
+        plotly.newPlot( plotDiv, plot2_data, plot2_layout,{responsive:true})
+    }
+
+    console.log(".... making plots ...",data)
+    let rootElement = document.getElementById("plotDiv")
+    rootElement.innerText = ""
+    if (!data.headers.includes("CIN2+ SE immediate")) return
+
+    // make plot1....
+    makePlot1(data,rootElement)
+    makePlot2(data,rootElement)
+}
 //async function displayTable(tableName){
 //    let data = await read_xl(tableName)
 async function displayTable(data){
@@ -538,6 +629,7 @@ function questionsAboutTable(questionResponse,divElement){
                         }
                         displayTable(data)
                     })
+                    makePlots(data)
                 });
             }
         }))
